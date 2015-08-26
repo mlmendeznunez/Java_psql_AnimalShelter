@@ -1,0 +1,11 @@
+<!--"/breeds"-->
+
+<h1>Marie's Animal Shelter</h1>
+<h3>Breeds:</h3>
+
+#foreach ($animal in $sheltanimalsbreed))  <!--$shelteranimalsbreed defined in get("/breeds")-->
+    $animal.getAnimalName()
+    <li>$animal.getType()</li>
+    <li>$animal.getBreed()</li>
+    <li>$animal.getGender()</li>
+#end

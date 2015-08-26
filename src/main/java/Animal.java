@@ -2,7 +2,6 @@ import java.util.List;
 import org.sql2o.*;
 import java.util.Arrays;
 
-
 public class Animal {
   private int id;
   private String animalname;
@@ -41,14 +40,31 @@ public class Animal {
     this.id = id;
     this.animalname = name;
     this.type = type;
-    this.breed = breed
+    this.breed = breed;
     this.gender = gender;
     this.date_admit = admit;
     this.ownerId = ownerid;
   }//end of Animal constructor
 
-    public static List<Animal> all() {
-      String sql = "SELECT animal_id, animal_name, gender, date_admit, type, breed, owner_id FROM animals";
+    public static List<Animal> allByType() {
+      String sql = "SELECT animal_id, animal_name, type, breed, gender, date_admit, owner_id
+                    FROM animals WHERE owner_id=0 ORDER BY type"; //owner_id = 0 so animal has no owner
+      try(Connection con = DB.sql2o.open()) {
+        return con.createQuery(sql).executeAndFetch(Animal.class);
+      }
+    }
+
+    public static List<Animal> allByBreed() {
+      String sql = "SELECT animal_id, animal_name, type, breed, gender, date_admit, owner_id
+                    FROM animals WHERE owner_id=0 ORDER BY breed";//owner_id = 0 so animal has no owner
+      try(Connection con = DB.sql2o.open()) {
+        return con.createQuery(sql).executeAndFetch(Animal.class);
+      }
+    }
+
+    public static List<Animal> allByName() {
+      String sql = "SELECT animal_id, animal_name, type, breed, gender, date_admit, owner_id
+                    FROM animals WHERE owner_id=0 ORDER BY animal_name";//owner_id = 0 so animal has no owner
       try(Connection con = DB.sql2o.open()) {
         return con.createQuery(sql).executeAndFetch(Animal.class);
       }
@@ -74,18 +90,36 @@ public class Animal {
         // String sql = "INSERT INTO animals (gender, breed, owner_id) VALUES (:gender, :breed, :owner_id)";//rows from database must EACH be input into connection
         // //:gender  = parameter
         // //Sql links the java below to the database in the consul
-        String sql = "INSERT INTO animals (animal_id, animal_name, gender, date_admit, type, owner_id)
-        VALUES (:animal_id, :animal_name, :gender, :date_admit, :type, :owner_id)"
+        if this.id == 0 {
+          String sql = "INSERT INTO animals ( animal_name, gender, date_admit, type, owner_id)
+          VALUES (:animal_name, :gender, :date_admit, :type, :owner_id)";
+          //String.format("VALUES (%d)", this.id) ^^ same as above BUT makes a security flaw
 
-        this.id = (int) con.createQuery(sql, true)
-        .addParameter(":animal_id", this.is)
-        .addParameter(":animal_name", this.animalname)//Replaces parameter in database, with animal_name parameter in the java file
-        .addParameter(":gender", this.gender)
-        .addParameter(":date_admit", this.date_admit)
-        .addParameter(":type", this.type)
-        .addParameter(":owner_id", this.ownerId)
-        .executeUpdate()
-        getKey()
+          this.id = (int) con.createQuery(sql, true) // ,true added in order to use .getKey()
+          //.addParameter(":animal_id", this.id) It would BE CIRCULATOR to add this.
+          .addParameter(":animal_name", this.animalname)//Replaces parameter in database, with animal_name parameter in the java file
+          .addParameter(":gender", this.gender)
+          .addParameter(":date_admit", this.date_admit)
+          .addParameter(":type", this.type)
+          .addParameter(":owner_id", this.ownerId)
+          .executeUpdate()
+          .getKey();
+        }
+        else {
+          String sql = "UPDATE animals SET ( animal_name, gender, date_admit, type, owner_id) =
+           (:animal_name, :gender, :date_admit, :type, :owner_id) WHERE animal_id = :animal_id";
+           //animal_name, geneder... are in the database
+           //:animal_name, :gender, :date_admit ... are supplied via addParameter Java
+
+           con.createQuery(sql) // .true not needed because we have our ID in java
+           .addParameter(":animal_name", this.animalname)//Replaces parameter in database, with animal_name parameter in the java file
+           .addParameter(":gender", this.gender)
+           .addParameter(":date_admit", this.date_admit)
+           .addParameter(":type", this.type)
+           .addParameter(":owner_id", this.ownerId)
+           .addParameter(":animal_id", this.id) // make sure we use the same row in the table
+           .executeUpdate();
+        }
       }
     }
 
@@ -133,7 +167,7 @@ public class Animal {
       //       return con.createQuery(sql).addParameter (":gender", gender).executeAndFetch(Animal.class); // , gender is the Java object from the method :gender is in the database
       //     }
       //   }
-        // 
+        //
         // //constructor to query/access just one single row in your database line id.
         // public static Animal find(int id) { //find is just by Id
         //   try(Connection con = DB.sql2o.open()){

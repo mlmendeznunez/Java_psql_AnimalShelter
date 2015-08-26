@@ -1,5 +1,20 @@
-<h1>Animal Shelter</h1>
+<!--Homepage-->
 
-<br><a href="/shelteranimals">View Animals</a></br>
+<h1>Marie's Animal Shelter</h1>
 
-<br><a href="/categories/new">Add a New Animal</a></br>
+<p>We are a non-profit animal shelter that pairs families to pets.  Our goal
+is that the pet fits the needs of the family, and the family fits the needs
+of the animal.</p>
+
+<br><a href="/breeds">Search animals by breed</a></br>
+
+<br><a href="/names">Search animals by name </a></br>
+
+#foreach ($animal in $sheltanimalstype))  <!--$shelteranimals defined in get("/")-->
+    $animal.getAnimalName()
+    <li>$animal.getType()</li>
+    <li>$animal.getBreed()</li>
+    <li>$animal.getGender()</li>
+#end
+
+ <br><h3><a href="/shelter">Employee Portal</a></h3></br>

@@ -1,12 +1,24 @@
-<h1>Enroll a new animal</h1>
+<!--"/shelter/registeranimal"-->
 
-<form action="/registeranimal" method="post">
+<h1>Marie's Animal Shelter</h1>
+<h2>Enroll a new animal</h2>
+
+<form action="/shelter/customerrecommendations" method="post">
 
   <label for="name">Animal name</label>
   <input id="name" name="name" type="text">
 
+  <label for="type">Type (Cat/Dog/Bird/Gerbil)</label>
+  <input id="type" name="type" type="text">
 
+  <label for="breed">Breed</label>
+  <input id="breed" name="breed" type="text">
 
+  <label for="gender">Gender</label>
+  <input id="gender" name="gender" type="text">
 
-  <button type="submit" class="btn btn-success">Add Category</button>
+  <label for="admitdate">Arrival date at shelter</label>
+  <input id="admitdate" name="admitdate" type="text">
+
+  <button type="submit" class="btn btn-success">Add Animal</button>
 </form>
