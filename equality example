@@ -1,0 +1,5 @@
+Animal doggie = new Animal("Spot", "lab", "F");
+
+doggie.save();
+
+Animal savedDoggie = Animal.find(doggie.getId());
